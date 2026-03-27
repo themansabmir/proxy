@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Control Center</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #f4f7f6; padding: 40px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .proxy-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .proxy-item:last-child { border-bottom: none; }
+        .info { display: flex; flex-direction: column; }
+        .id { font-weight: bold; text-transform: capitalize; }
+        .url { font-size: 12px; color: #666; }
+        
+        /* Toggle Switch Styling */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2ecc71; }
+        input:checked + .slider:before { transform: translateX(24px); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Proxy Destinations</h1>
+    <div id="proxy-list">Loading proxies...</div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8000/admin/proxies';
+
+    // Fetch and render the proxies
+    async function loadProxies() {
+        try {
+            const response = await fetch(API_URL);
+            const proxies = await response.json();
+            const listContainer = document.getElementById('proxy-list');
+            listContainer.innerHTML = '';
+
+            proxies.forEach(proxy => {
+                const item = document.createElement('div');
+                item.className = 'proxy-item';
+                item.innerHTML = `
+                    <div class="info">
+                        <span class="id">${proxy.id}</span>
+                        <span class="url">${proxy.url}</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" ${proxy.isEnabled ? 'checked' : ''} onchange="toggleProxy('${proxy.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                listContainer.appendChild(item);
+            });
+        } catch (err) {
+            document.getElementById('proxy-list').innerText = 'Failed to load proxies. Is the server running?';
+        }
+    }
+
+    // Send PATCH request to update status
+    async function toggleProxy(id, isEnabled) {
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isEnabled })
+            });
+            console.log(`${id} is now ${isEnabled ? 'Enabled' : 'Disabled'}`);
+        } catch (err) {
+            alert('Failed to update proxy status');
+            loadProxies(); // Reset UI if failed
+        }
+    }
+
+    // Initial load
+    loadProxies();
+</script>
+
+</body>
+</html>
