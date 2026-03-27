@@ -1,0 +1,19 @@
+{
+  "proxies": [
+    {
+      "id": "typebot",
+      "url": "https://whatsappbot.irfworld.com",
+      "isEnabled": true
+    },
+    {
+      "id": "eybot",
+      "url": "https://eybotapi.irfworld.com",
+      "isEnabled": true
+    },
+    {
+      "id": "proxy_3",
+      "url": "https://api.example.com/service-3",
+      "isEnabled": false
+    }
+  ]
+}
