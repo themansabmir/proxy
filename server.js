@@ -95,7 +95,7 @@ app.delete('/admin/proxies/:id', (req, res) => {
 
 // --- WHATSAPP WEBHOOK: GET (Verification) ---
 // Meta sends a GET with hub.mode, hub.verify_token, hub.challenge to verify the endpoint.
-app.get('/api/v1/workspace/:workspaceId/whatsapp/:credentialsId/webhook', (req, res) => {
+app.get('/api/v1/workspaces/:workspaceId/whatsapp/:credentialsId/webhook', (req, res) => {
     const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "my_verify_token";
 
     const mode = req.query["hub.mode"];
@@ -114,7 +114,7 @@ app.get('/api/v1/workspace/:workspaceId/whatsapp/:credentialsId/webhook', (req, 
 // --- WHATSAPP WEBHOOK: POST (Fan-out) ---
 // Meta sends a POST for every incoming message/event.
 // We must respond 200 OK immediately, then forward to all active targets.
-app.post('/api/v1/workspace/:workspaceId/whatsapp/:credentialsId/webhook', bodyParser.raw({ type: '*/*', limit: '20mb' }), (req, res) => {
+app.post('/api/v1/workspaces/:workspaceId/whatsapp/:credentialsId/webhook', bodyParser.raw({ type: '*/*', limit: '20mb' }), (req, res) => {
     const activeTargets = getActiveProxies();
     const { workspaceId, credentialsId } = req.params;
 
@@ -167,5 +167,5 @@ const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => {
     console.log(`\n✅ Server active at http://localhost:${PORT}`);
     console.log(`🛠  Dashboard: http://localhost:${PORT}/dashboard`);
-    console.log(`🚀 Webhook Entry: http://localhost:${PORT}/api/v1/workspace/:workspaceId/whatsapp/:credentialsId/webhook\n`);
+    console.log(`🚀 Webhook Entry: http://localhost:${PORT}/api/v1/workspaces/:workspaceId/whatsapp/:credentialsId/webhook\n`);
 });

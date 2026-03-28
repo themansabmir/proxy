@@ -1,6 +1,6 @@
 services:
   proxy:
-    image: ghcr.io/themansabmir/proxy:latest:latest
+    image: ghcr.io/themansabmir/proxy:latest
     container_name: proxy
     restart: unless-stopped
     ports:
